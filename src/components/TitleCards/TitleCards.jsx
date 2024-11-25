@@ -1,86 +1,58 @@
-import React, { useEffect, useRef, useState } from 'react';
-import './TitleCards.css';
-import { Link } from 'react-router-dom';
-import {TMDB_Token} from '../../config.js'
+import { useEffect, useState, useRef } from "react";
+import "./TitleCards.css";
+import { Link } from "react-router-dom";
 
 const TitleCards = ({ title, category }) => {
   const [apiData, setApiData] = useState([]);
   const cardsRef = useRef();
-
   const options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      accept: 'application/json',
-      Authorization: `Bearer ${TMDB_Token}`,
+      accept: "application/json",
+      Authorization:
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjYzU2NDc3MzZiM2I3ZWM0Y2I5NGY5ODU4NzgyMjI0MiIsIm5iZiI6MTcyMTI4NDc3NC4xMDQ3NDEsInN1YiI6IjY2OTgwMTdjMDM1YmI2NzZhY2U4MWQ1MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.enfEUF5BDKdti-Iv1P9OBDQ19gDv0LeKQMXF2rroPTA",
     },
   };
 
   const handleWheel = (event) => {
     event.preventDefault();
-    if (cardsRef.current) {
-      cardsRef.current.scrollLeft += event.deltaY;
-    }
+    cardsRef.current.scrollLeft += event.deltaY;
   };
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${
-            category ? category : 'now_playing'
-          }?language=en-US&page=1`,
-          options
-        );
+    console.log("Category: ", category);
 
-        // Check if response is okay
-        if (!response.ok) {
-          throw new Error('Network response was not ok: ' + response.statusText);
-        }
+    if (category) {
+      fetch(
+        `https://api.themoviedb.org/3/movie/${category}?language=en-US&page=1`,
+        options
+      )
+        .then((response) => response.json())
+        .then((response) => setApiData(response.results))
+        .catch((err) => console.error(err));
 
-        const data = await response.json();
-        console.log('Fetched Movies:', data); // Log fetched data
-        setApiData(data.results || []); // Set results or empty array
-      } catch (error) {
-        console.error('Fetch error:', error);
+      if (cardsRef.current) {
+        cardsRef.current.addEventListener("wheel", handleWheel);
       }
-    };
 
-    fetchMovies();
-
-    const refCurrent = cardsRef.current;
-    refCurrent.addEventListener('wheel', handleWheel);
-
-    return () => {
-      refCurrent.removeEventListener('wheel', handleWheel);
-    };
+      return () => {
+        if (cardsRef.current) {
+          cardsRef.current.removeEventListener("wheel", handleWheel);
+        }
+      };
+    }
   }, [category]);
-
-  const dataToPass = { name: 'John Doe', age: 25 }; // Example data
 
   return (
     <div className="title-cards">
-      <h2>{title ? title : 'Popular on Netflix'}</h2>
+      <h2>{title ? title : "Popular on Netflix"}</h2>
       <div className="card-list" ref={cardsRef}>
-        {apiData.length > 0 ? (
-          apiData.map((card) =>
-            card.backdrop_path && card.original_title ? (
-              <Link
-                to={`/player/${card.id}`}
-                state={dataToPass}
-                className="card"
-                key={card.id}
-              >
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${card.backdrop_path}`}
-                  alt={card.original_title}
-                />
-                <p>{card.original_title}</p>
-              </Link>
-            ) : null
-          )
-        ) : (
-          <p>No movies found.</p>
-        )}
+        {apiData.map((card, index) => (
+          <Link to={`player/${card.id}`} className="card" key={index}>
+            <img src={`https://image.tmdb.org/t/p/w500` + card.backdrop_path} alt="" />
+            <p>{card.original_title}</p>
+          </Link>
+        ))}
       </div>
     </div>
   );

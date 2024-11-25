@@ -1,8 +1,6 @@
-# Env
+# Logs
 .env
 *.env
-env
-# Logs
 logs
 *.log
 npm-debug.log*
@@ -26,3 +24,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+* text=auto
+*.js text eol=lf

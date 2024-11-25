@@ -1,0 +1,36 @@
+.search-page {
+    padding: 20px;
+    color: #fff;
+  }
+  
+  .search-page h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+  
+  .search-results {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 cards per row */
+    gap: 20px;
+  }
+  
+  .search-card {
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .search-card img {
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  .search-card p {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #fff;
+  }
+  
+  .search-card:hover {
+    transform: scale(1.1);
+  }
+  
